@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+{% block title %}Book Flight — AirTicket{% endblock %}
+{% block content %}
+<div class="container mt-4" style="max-width:900px;">
+
+  <a href="javascript:history.back()" class="btn btn-outline-secondary btn-sm mb-4">
+    <i class="bi bi-arrow-left me-1"></i>Back to Results
+  </a>
+
+  <div class="row g-4">
+    <!-- Form -->
+    <div class="col-md-7">
+      <div class="card p-4">
+        <h4 class="fw-800 mb-4"><i class="bi bi-person-lines-fill me-2 text-primary"></i>Passenger Details</h4>
+        <form method="POST">
+          <div class="mb-3">
+            <label class="form-label fw-600">Full Name <span class="text-danger">*</span></label>
+            <input type="text" name="full_name" class="form-control" placeholder="As on ID/Passport" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-600">Email Address <span class="text-danger">*</span></label>
+            <input type="email" name="email" class="form-control" placeholder="you@example.com" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-600">Phone Number <span class="text-danger">*</span></label>
+            <input type="tel" name="phone" class="form-control" placeholder="+91 XXXXX XXXXX" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-600">Passport / ID Number <span class="text-muted small">(optional)</span></label>
+            <input type="text" name="passport_no" class="form-control" placeholder="For international flights">
+          </div>
+          <div class="mb-4">
+            <label class="form-label fw-600">Seat Class</label>
+            <div class="d-flex gap-3">
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="seat_class" id="eco" value="economy"
+                       {% if seat_class == 'economy' %}checked{% endif %} onchange="updatePrice(this.value)">
+                <label class="form-check-label" for="eco">
+                  Economy &mdash; <strong>₹{{ "{:,.0f}".format(flight.price_economy) }}</strong>
+                </label>
+              </div>
+              <div class="form-check">
+                <input class="form-check-input" type="radio" name="seat_class" id="biz" value="business"
+                       {% if seat_class == 'business' %}checked{% endif %} onchange="updatePrice(this.value)">
+                <label class="form-check-label" for="biz">
+                  Business &mdash; <strong>₹{{ "{:,.0f}".format(flight.price_business) }}</strong>
+                </label>
+              </div>
+            </div>
+          </div>
+          <button type="submit" class="btn btn-primary btn-lg w-100 fw-700">
+            <i class="bi bi-lock-fill me-2"></i>Confirm Booking &mdash; ₹<span id="total">{{ "{:,.0f}".format(price) }}</span>
+          </button>
+          <p class="text-muted text-center small mt-2">
+            <i class="bi bi-shield-check me-1"></i>Free cancellation within 24 hours
+          </p>
+        </form>
+      </div>
+    </div>
+
+    <!-- Summary -->
+    <div class="col-md-5">
+      <div class="card p-4 h-100" style="background:#f8fafc;">
+        <h5 class="fw-800 mb-4 text-primary"><i class="bi bi-receipt me-2"></i>Flight Summary</h5>
+
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <span class="badge" style="background:#1e3a5f;color:white;font-size:0.85rem;padding:6px 12px;">
+            {{ flight.airline_code }} {{ flight.flight_number }}
+          </span>
+          <span class="text-muted small">{{ flight.departure_time.strftime('%d %b %Y') }}</span>
+        </div>
+
+        <div class="text-center my-4">
+          <div class="d-flex justify-content-between align-items-center">
+            <div>
+              <div style="font-size:2rem;font-weight:800;">{{ flight.departure_time.strftime('%H:%M') }}</div>
+              <div class="text-muted small">{{ flight.origin_city }}</div>
+              <div class="fw-700">{{ flight.origin_code }}</div>
+            </div>
+            <div class="text-center px-3">
+              <i class="bi bi-airplane text-primary fs-3"></i>
+              <div class="text-muted" style="font-size:0.7rem;white-space:nowrap;">Non-stop</div>
+            </div>
+            <div>
+              <div style="font-size:2rem;font-weight:800;">{{ flight.arrival_time.strftime('%H:%M') }}</div>
+              <div class="text-muted small">{{ flight.dest_city }}</div>
+              <div class="fw-700">{{ flight.dest_code }}</div>
+            </div>
+          </div>
+        </div>
+
+        <hr>
+        <div class="d-flex justify-content-between small mb-2">
+          <span class="text-muted">Airline</span>
+          <span class="fw-600">{{ flight.airline_name }}</span>
+        </div>
+        <div class="d-flex justify-content-between small mb-2">
+          <span class="text-muted">Available seats</span>
+          <span class="fw-600 {% if flight.available_seats < 20 %}text-danger{% else %}text-success{% endif %}">
+            {{ flight.available_seats }}
+          </span>
+        </div>
+        <hr>
+        <div class="d-flex justify-content-between">
+          <span class="fw-700">Total Fare</span>
+          <span class="fw-800 text-primary fs-5">₹<span id="summary-total">{{ "{:,.0f}".format(price) }}</span></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+{% block scripts %}
+<script>
+const prices = {
+  economy:  {{ flight.price_economy }},
+  business: {{ flight.price_business }}
+};
+function fmt(n) { return n.toLocaleString('en-IN'); }
+function updatePrice(cls) {
+  document.getElementById('total').textContent         = fmt(prices[cls]);
+  document.getElementById('summary-total').textContent = fmt(prices[cls]);
+}
+</script>
+{% endblock %}

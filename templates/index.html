@@ -1,0 +1,94 @@
+{% extends "base.html" %}
+{% block title %}Search Flights — AirTicket Manager{% endblock %}
+{% block content %}
+
+<div class="hero">
+  <div class="container text-center">
+    <h1><i class="bi bi-airplane me-2"></i>Find Your Flight</h1>
+    <p>Search, compare and book tickets across all airlines instantly</p>
+  </div>
+</div>
+
+<div class="container">
+  <div class="search-card">
+    {% if error %}
+    <div class="alert alert-danger mb-4"><i class="bi bi-exclamation-triangle me-2"></i>{{ error }}</div>
+    {% endif %}
+    <form action="/search" method="GET">
+      <div class="row g-3 align-items-end">
+        <div class="col-md-3">
+          <label class="form-label fw-600 small text-uppercase text-muted ls-1">From</label>
+          <select name="origin" class="form-select form-select-lg" required>
+            <option value="">Select Origin</option>
+            {% for ap in airports %}
+            <option value="{{ ap.iata_code }}">{{ ap.city }} ({{ ap.iata_code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-1 text-center pb-1">
+          <i class="bi bi-arrow-left-right fs-4 text-primary"></i>
+        </div>
+        <div class="col-md-3">
+          <label class="form-label fw-600 small text-uppercase text-muted">To</label>
+          <select name="destination" class="form-select form-select-lg" required>
+            <option value="">Select Destination</option>
+            {% for ap in airports %}
+            <option value="{{ ap.iata_code }}">{{ ap.city }} ({{ ap.iata_code }})</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-600 small text-uppercase text-muted">Date</label>
+          <input type="date" name="date" class="form-control form-control-lg" required
+                 min="{{ now }}" value="{{ now }}">
+        </div>
+        <div class="col-md-2">
+          <label class="form-label fw-600 small text-uppercase text-muted">Class</label>
+          <select name="seat_class" class="form-select form-select-lg">
+            <option value="economy">Economy</option>
+            <option value="business">Business</option>
+          </select>
+        </div>
+        <div class="col-md-1">
+          <button type="submit" class="btn btn-primary btn-lg w-100">
+            <i class="bi bi-search"></i>
+          </button>
+        </div>
+      </div>
+    </form>
+  </div>
+
+  <!-- Features -->
+  <div class="row g-4 mt-5">
+    <div class="col-md-4">
+      <div class="card h-100 p-4 text-center border-0" style="background:#eff6ff;">
+        <i class="bi bi-shield-check fs-1 text-primary mb-3"></i>
+        <h5 class="fw-700">Secure Booking</h5>
+        <p class="text-muted small">Every booking gets a unique PNR. Manage, track and cancel anytime.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 p-4 text-center border-0" style="background:#f0fdf4;">
+        <i class="bi bi-graph-up-arrow fs-1 text-success mb-3"></i>
+        <h5 class="fw-700">Best Price Finder</h5>
+        <p class="text-muted small">We automatically highlight the cheapest flight on every route.</p>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card h-100 p-4 text-center border-0" style="background:#fdf4ff;">
+        <i class="bi bi-lightning-charge fs-1 text-purple mb-3" style="color:#7c3aed;"></i>
+        <h5 class="fw-700">Instant Confirmation</h5>
+        <p class="text-muted small">Get your boarding pass and PNR immediately after booking.</p>
+      </div>
+    </div>
+  </div>
+</div>
+
+{% endblock %}
+{% block scripts %}
+<script>
+  // Set min date to today
+  const d = document.querySelector('input[type=date]');
+  if (d && !d.value) d.value = new Date().toISOString().split('T')[0];
+</script>
+{% endblock %}

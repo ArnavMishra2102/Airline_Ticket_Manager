@@ -1,0 +1,123 @@
+{% extends "base.html" %}
+{% block title %}Admin Dashboard — AirTicket{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+  <h3 class="fw-800 mb-4">
+    <i class="bi bi-speedometer2 me-2 text-primary"></i>Admin Dashboard
+  </h3>
+
+  <div class="row g-3 mb-4">
+    <div class="col-md-2">
+      <div class="card p-3 text-center">
+        <div class="text-muted small">Flights</div>
+        <h3 class="fw-800">{{ stats.total_flights }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card p-3 text-center">
+        <div class="text-muted small">Bookings</div>
+        <h3 class="fw-800">{{ stats.total_bookings }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card p-3 text-center">
+        <div class="text-muted small">Confirmed</div>
+        <h3 class="fw-800 text-success">{{ stats.confirmed }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card p-3 text-center">
+        <div class="text-muted small">Cancelled</div>
+        <h3 class="fw-800 text-danger">{{ stats.cancelled }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card p-3 text-center">
+        <div class="text-muted small">Passengers</div>
+        <h3 class="fw-800">{{ stats.total_passengers }}</h3>
+      </div>
+    </div>
+
+    <div class="col-md-2">
+      <div class="card p-3 text-center">
+        <div class="text-muted small">Revenue</div>
+        <h3 class="fw-800 text-primary">₹{{ "{:,.0f}".format(stats.total_revenue) }}</h3>
+      </div>
+    </div>
+  </div>
+
+  <div class="d-flex gap-2 mb-4">
+    <a href="/admin/flights" class="btn btn-primary">
+      <i class="bi bi-airplane me-1"></i>Manage Flights
+    </a>
+    <a href="/admin/flights/add" class="btn btn-outline-primary">
+      <i class="bi bi-plus-circle me-1"></i>Add Flight
+    </a>
+  </div>
+
+  <div class="row g-4">
+    <div class="col-md-8">
+      <div class="card p-4">
+        <h5 class="fw-800 mb-3">Recent Bookings</h5>
+
+        <div class="table-responsive">
+          <table class="table table-hover align-middle">
+            <thead>
+              <tr>
+                <th>PNR</th>
+                <th>Passenger</th>
+                <th>Flight</th>
+                <th>Route</th>
+                <th>Status</th>
+                <th>Fare</th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for b in recent_bookings %}
+              <tr>
+                <td class="fw-700 text-primary">{{ b.pnr }}</td>
+                <td>{{ b.full_name }}</td>
+                <td>{{ b.flight_number }}</td>
+                <td>{{ b.origin_city }} → {{ b.dest_city }}</td>
+                <td>
+                  <span class="badge status-{{ b.status }} rounded-pill">
+                    {{ b.status.title() }}
+                  </span>
+                </td>
+                <td>₹{{ "{:,.0f}".format(b.total_fare) }}</td>
+              </tr>
+              {% else %}
+              <tr>
+                <td colspan="6" class="text-center text-muted py-4">
+                  No bookings yet.
+                </td>
+              </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="col-md-4">
+      <div class="card p-4">
+        <h5 class="fw-800 mb-3">Popular Routes</h5>
+
+        {% for r in popular_routes %}
+        <div class="d-flex justify-content-between border-bottom py-2">
+          <span>{{ r.origin }} → {{ r.destination }}</span>
+          <strong>{{ r.bookings }}</strong>
+        </div>
+        {% else %}
+        <p class="text-muted mb-0">No route data yet.</p>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

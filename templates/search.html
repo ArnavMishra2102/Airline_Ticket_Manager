@@ -1,0 +1,111 @@
+{% extends "base.html" %}
+{% block title %}Search Results — AirTicket{% endblock %}
+{% block content %}
+<div class="container mt-4">
+
+  <!-- Search header -->
+  <div class="d-flex align-items-center justify-content-between mb-4 flex-wrap gap-3">
+    <div>
+      <h2 class="fw-800 mb-1">
+        {{ origin }} <i class="bi bi-arrow-right text-primary mx-2"></i> {{ destination }}
+      </h2>
+      <p class="text-muted mb-0 small">
+        <i class="bi bi-calendar3 me-1"></i>{{ date }} &nbsp;·&nbsp;
+        <i class="bi bi-person me-1"></i>1 passenger &nbsp;·&nbsp;
+        <span class="badge bg-primary">{{ seat_class.title() }}</span>
+      </p>
+    </div>
+    <a href="/" class="btn btn-outline-primary btn-sm"><i class="bi bi-arrow-left me-1"></i>Modify Search</a>
+  </div>
+
+  {% if flights %}
+  <p class="text-muted small mb-3">
+    <i class="bi bi-info-circle me-1"></i>{{ flights|length }} flight(s) found.
+    <span class="text-success fw-600">Best price highlighted.</span>
+  </p>
+
+  {% for f in flights %}
+  <div class="flight-card {% if best and f.id == best.id %}best{% endif %}">
+    {% if best and f.id == best.id %}
+    <div class="best-badge">⭐ Best Price</div>
+    {% endif %}
+
+    <div class="row align-items-center">
+      <!-- Airline -->
+      <div class="col-md-2">
+        <span class="airline-badge mb-2 d-inline-block">{{ f.airline_code }}</span>
+        <div class="fw-700 small">{{ f.airline_name }}</div>
+        <div class="text-muted" style="font-size:0.75rem;">{{ f.flight_number }}</div>
+      </div>
+
+      <!-- Departure -->
+      <div class="col-md-2 text-center">
+        <div class="time-big">{{ f.departure_time.strftime('%H:%M') }}</div>
+        <div class="city-small">{{ f.origin_city }} ({{ f.origin_code }})</div>
+      </div>
+
+      <!-- Duration -->
+      <div class="col-md-3 text-center">
+        <div class="duration-line">
+          {% set h = (f.duration_min // 60)|int %}
+          {% set m = (f.duration_min % 60)|int %}
+          {{ h }}h {{ m }}m
+        </div>
+        <div style="text-align:center;margin-top:4px;">
+          <i class="bi bi-airplane text-primary" style="font-size:1.2rem;"></i>
+        </div>
+        <div class="text-muted" style="font-size:0.7rem;text-align:center;">Non-stop</div>
+      </div>
+
+      <!-- Arrival -->
+      <div class="col-md-2 text-center">
+        <div class="time-big">{{ f.arrival_time.strftime('%H:%M') }}</div>
+        <div class="city-small">{{ f.dest_city }} ({{ f.dest_code }})</div>
+      </div>
+
+      <!-- Seats & Status -->
+      <div class="col-md-1 text-center">
+        <div class="small text-muted">Seats</div>
+        <div class="fw-700 {% if f.available_seats < 20 %}text-danger{% else %}text-success{% endif %}">
+          {{ f.available_seats }}
+        </div>
+        {% if f.available_seats < 20 %}
+        <div style="font-size:0.65rem;color:#dc2626;">Filling fast!</div>
+        {% endif %}
+      </div>
+
+      <!-- Price & Book -->
+      <div class="col-md-2 text-end">
+        <div class="price-big">₹{{ "{:,.0f}".format(f.price) }}</div>
+        <div class="text-muted" style="font-size:0.72rem;">per person</div>
+        <a href="/book/{{ f.id }}?seat_class={{ seat_class }}"
+           class="btn btn-primary btn-sm mt-2 w-100">
+          Book Now <i class="bi bi-arrow-right ms-1"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Status -->
+    <div class="mt-3 pt-3 border-top d-flex gap-2 flex-wrap align-items-center">
+      <span class="badge status-{{ f.status }} rounded-pill px-3">
+        <i class="bi bi-circle-fill me-1" style="font-size:0.5rem;"></i>{{ f.status.title() }}
+      </span>
+      <span class="text-muted small ms-2">
+        <i class="bi bi-clock me-1"></i>
+        Departs {{ f.departure_time.strftime('%d %b %Y, %I:%M %p') }}
+      </span>
+    </div>
+  </div>
+  {% endfor %}
+
+  {% else %}
+  <div class="text-center py-5">
+    <i class="bi bi-airplane-engines fs-1 text-muted"></i>
+    <h4 class="mt-3 text-muted">No flights found</h4>
+    <p class="text-muted">No flights available for this route and date. Try a different date.</p>
+    <a href="/" class="btn btn-primary mt-2">Search Again</a>
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

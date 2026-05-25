@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>{% block title %}AirTicket Manager{% endblock %}</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css" rel="stylesheet">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+  * { font-family: 'Inter', sans-serif; }
+
+  :root {
+    --primary: #2563eb;
+    --primary-dark: #1d4ed8;
+    --accent: #0ea5e9;
+    --dark: #0f172a;
+    --surface: #f8fafc;
+    --card: #ffffff;
+  }
+
+  body { background: var(--surface); color: #1e293b; }
+
+  /* Navbar */
+  .navbar { background: var(--dark) !important; box-shadow: 0 2px 20px rgba(0,0,0,0.3); }
+  .navbar-brand { font-weight: 800; font-size: 1.3rem; color: #fff !important; letter-spacing: -0.5px; }
+  .navbar-brand span { color: var(--accent); }
+  .nav-link { color: #94a3b8 !important; font-size: 0.88rem; font-weight: 500; transition: color 0.2s; }
+  .nav-link:hover, .nav-link.active { color: #fff !important; }
+
+  /* Cards */
+  .card { border: 1px solid #e2e8f0; border-radius: 16px; box-shadow: 0 1px 8px rgba(0,0,0,0.06); }
+  .card-header { border-radius: 16px 16px 0 0 !important; font-weight: 700; }
+
+  /* Buttons */
+  .btn-primary { background: var(--primary); border-color: var(--primary); font-weight: 600; }
+  .btn-primary:hover { background: var(--primary-dark); border-color: var(--primary-dark); }
+  .btn-outline-primary { border-color: var(--primary); color: var(--primary); font-weight: 600; }
+
+  /* Hero */
+  .hero {
+    background: linear-gradient(135deg, #0f172a 0%, #1e3a5f 50%, #0f2744 100%);
+    color: white;
+    padding: 80px 0 60px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute; inset: 0;
+    background: url("data:image/svg+xml,%3Csvg width='60' height='60' viewBox='0 0 60 60' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='none' fill-rule='evenodd'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+  }
+  .hero h1 { font-size: 2.8rem; font-weight: 800; letter-spacing: -1px; }
+  .hero p { font-size: 1.1rem; color: #94a3b8; }
+
+  /* Search form */
+  .search-card {
+    background: white;
+    border-radius: 20px;
+    padding: 32px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.15);
+    margin-top: -40px;
+    position: relative;
+    z-index: 10;
+  }
+
+  /* Flight card */
+  .flight-card {
+    border: 1px solid #e2e8f0;
+    border-radius: 16px;
+    padding: 24px;
+    margin-bottom: 16px;
+    background: white;
+    transition: all 0.2s;
+    position: relative;
+  }
+  .flight-card:hover { box-shadow: 0 8px 30px rgba(37,99,235,0.12); border-color: #bfdbfe; transform: translateY(-1px); }
+  .flight-card.best { border-color: #2563eb; border-width: 2px; }
+  .best-badge { position: absolute; top: -10px; left: 20px; background: #2563eb; color: white; font-size: 0.7rem; font-weight: 700; padding: 3px 12px; border-radius: 20px; letter-spacing: 1px; text-transform: uppercase; }
+
+  .airline-badge { font-size: 0.75rem; font-weight: 700; padding: 4px 10px; border-radius: 8px; background: #eff6ff; color: #2563eb; }
+  .time-big { font-size: 1.8rem; font-weight: 800; color: #0f172a; line-height: 1; }
+  .city-small { font-size: 0.75rem; color: #64748b; margin-top: 2px; }
+  .duration-line { color: #94a3b8; font-size: 0.8rem; text-align: center; position: relative; }
+  .duration-line::before, .duration-line::after {
+    content: ''; position: absolute; top: 50%; width: 30%; height: 1px; background: #e2e8f0;
+  }
+  .duration-line::before { left: 0; }
+  .duration-line::after { right: 0; }
+  .price-big { font-size: 1.7rem; font-weight: 800; color: #2563eb; }
+
+  /* Stat cards */
+  .stat-card { border-radius: 16px; padding: 24px; color: white; }
+  .stat-card .stat-num { font-size: 2.2rem; font-weight: 800; line-height: 1; }
+  .stat-card .stat-label { font-size: 0.78rem; opacity: 0.8; margin-top: 4px; text-transform: uppercase; letter-spacing: 1px; }
+
+  /* Boarding pass */
+  .boarding-pass {
+    background: white;
+    border-radius: 20px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+    border: 1px solid #e2e8f0;
+    max-width: 680px;
+    margin: 0 auto;
+  }
+  .bp-header { background: linear-gradient(135deg, #0f172a, #1e3a5f); color: white; padding: 28px 32px; }
+  .bp-body { padding: 32px; display: flex; gap: 32px; align-items: center; }
+  .bp-divider { border: none; border-top: 2px dashed #e2e8f0; margin: 0 32px; }
+  .bp-footer { padding: 24px 32px; background: #f8fafc; display: flex; justify-content: space-between; align-items: center; }
+  .pnr-code { font-size: 2rem; font-weight: 800; letter-spacing: 6px; color: #2563eb; font-family: monospace; }
+
+  /* Status badge */
+  .status-confirmed { background: #dcfce7; color: #166534; }
+  .status-cancelled  { background: #fee2e2; color: #991b1b; }
+  .status-checked_in { background: #dbeafe; color: #1e40af; }
+  .status-scheduled  { background: #fef9c3; color: #854d0e; }
+  .status-delayed    { background: #fed7aa; color: #9a3412; }
+
+  /* Table */
+  .table th { font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; color: #64748b; }
+
+  footer { background: var(--dark); color: #64748b; padding: 24px 0; margin-top: 80px; font-size: 0.85rem; }
+</style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/"><i class="bi bi-airplane-fill me-2"></i>Air<span>Ticket</span></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav ms-auto gap-1">
+        <li class="nav-item"><a class="nav-link" href="/"><i class="bi bi-search me-1"></i>Search Flights</a></li>
+        <li class="nav-item"><a class="nav-link" href="/status"><i class="bi bi-qr-code me-1"></i>PNR Status</a></li>
+        <li class="nav-item"><a class="nav-link" href="/admin"><i class="bi bi-speedometer2 me-1"></i>Admin</a></li>
+        <li class="nav-item"><a class="nav-link" href="/admin/flights/add"><i class="bi bi-plus-circle me-1"></i>Add Flight</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+  <div class="container mt-3">
+    {% for category, message in messages %}
+    <div class="alert alert-{{ 'danger' if category == 'danger' else 'success' if category == 'success' else 'warning' }} alert-dismissible fade show" role="alert">
+      <i class="bi bi-{{ 'check-circle' if category == 'success' else 'exclamation-triangle' }} me-2"></i>{{ message }}
+      <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+    </div>
+    {% endfor %}
+  </div>
+  {% endif %}
+{% endwith %}
+
+{% block content %}{% endblock %}
+
+<footer>
+  <div class="container text-center">
+    <p class="mb-0">AirTicket Manager &copy; 2026 &mdash; Built with Flask + MySQL</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

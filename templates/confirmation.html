@@ -1,0 +1,62 @@
+{% extends "base.html" %}
+{% block title %}Booking Confirmation — AirTicket{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+  <div class="boarding-pass">
+    <div class="bp-header">
+      <h3 class="fw-800 mb-1">Booking Confirmed</h3>
+      <p class="mb-0">Your ticket has been booked successfully.</p>
+    </div>
+
+    <div class="bp-body">
+      <div class="w-100">
+        <div class="row g-4">
+          <div class="col-md-6">
+            <div class="text-muted small">Passenger</div>
+            <h5 class="fw-800">{{ booking.full_name }}</h5>
+          </div>
+
+          <div class="col-md-6 text-md-end">
+            <div class="text-muted small">PNR</div>
+            <div class="pnr-code">{{ booking.pnr }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="text-muted small">Flight</div>
+            <div class="fw-700">{{ booking.airline_name }} {{ booking.flight_number }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="text-muted small">Seat</div>
+            <div class="fw-700">{{ booking.seat_number }} — {{ booking.seat_class.title() }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="text-muted small">From</div>
+            <h4 class="fw-800">{{ booking.origin_city }} ({{ booking.origin_code }})</h4>
+            <div>{{ booking.departure_time.strftime('%d %b %Y, %I:%M %p') }}</div>
+          </div>
+
+          <div class="col-md-6">
+            <div class="text-muted small">To</div>
+            <h4 class="fw-800">{{ booking.dest_city }} ({{ booking.dest_code }})</h4>
+            <div>{{ booking.arrival_time.strftime('%d %b %Y, %I:%M %p') }}</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <hr class="bp-divider">
+
+    <div class="bp-footer">
+      <div>
+        <div class="text-muted small">Total Fare</div>
+        <h4 class="fw-800 text-primary mb-0">₹{{ "{:,.0f}".format(booking.total_fare) }}</h4>
+      </div>
+
+      <a href="/status" class="btn btn-outline-primary">Check Status</a>
+    </div>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+{% block title %}PNR Status — AirTicket{% endblock %}
+{% block content %}
+<div class="container mt-4" style="max-width:700px;">
+  <h3 class="fw-800 mb-4"><i class="bi bi-qr-code me-2 text-primary"></i>Check PNR Status</h3>
+
+  <div class="card p-4 mb-4">
+    <form method="POST">
+      <label class="form-label fw-600">Enter PNR Number</label>
+      <div class="input-group input-group-lg">
+        <input type="text" name="pnr" class="form-control text-uppercase fw-700"
+               placeholder="e.g. AB1234" maxlength="8" required
+               style="font-family:monospace;letter-spacing:3px;font-size:1.3rem;"
+               value="{{ request.form.get('pnr', '') }}">
+        <button class="btn btn-primary fw-700" type="submit">
+          <i class="bi bi-search me-1"></i>Search
+        </button>
+      </div>
+    </form>
+  </div>
+
+  {% if booking %}
+  <div class="card p-4">
+    <!-- Status header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+      <div>
+        <div class="text-muted small">PNR</div>
+        <div style="font-size:1.8rem;font-weight:800;font-family:monospace;letter-spacing:4px;color:#2563eb;">
+          {{ booking.pnr }}
+        </div>
+      </div>
+      <span class="badge status-{{ booking.status }} rounded-pill px-4 py-2" style="font-size:0.85rem;">
+        {{ booking.status.replace('_',' ').title() }}
+      </span>
+    </div>
+
+    <hr>
+
+    <!-- Flight info -->
+    <div class="row g-3 mb-4">
+      <div class="col-6">
+        <div class="text-muted small">Flight</div>
+        <div class="fw-700">{{ booking.airline_name }} {{ booking.flight_number }}</div>
+      </div>
+      <div class="col-6">
+        <div class="text-muted small">Date</div>
+        <div class="fw-700">{{ booking.departure_time.strftime('%d %b %Y') }}</div>
+      </div>
+      <div class="col-6">
+        <div class="text-muted small">From</div>
+        <div class="fw-700">{{ booking.origin_city }} ({{ booking.origin_code }})</div>
+        <div class="text-muted small">{{ booking.departure_time.strftime('%H:%M') }}</div>
+      </div>
+      <div class="col-6">
+        <div class="text-muted small">To</div>
+        <div class="fw-700">{{ booking.dest_city }} ({{ booking.dest_code }})</div>
+        <div class="text-muted small">{{ booking.arrival_time.strftime('%H:%M') }}</div>
+      </div>
+    </div>
+
+    <hr>
+
+    <!-- Passenger info -->
+    <div class="row g-3 mb-4">
+      <div class="col-6">
+        <div class="text-muted small">Passenger</div>
+        <div class="fw-700">{{ booking.full_name }}</div>
+      </div>
+      <div class="col-6">
+        <div class="text-muted small">Seat</div>
+        <div class="fw-700">{{ booking.seat_number }} ({{ booking.seat_class.title() }})</div>
+      </div>
+      <div class="col-6">
+        <div class="text-muted small">Fare</div>
+        <div class="fw-700 text-primary">₹{{ "{:,.0f}".format(booking.total_fare) }}</div>
+      </div>
+      <div class="col-6">
+        <div class="text-muted small">Flight Status</div>
+        <span class="badge status-{{ booking.flight_status }} rounded-pill">{{ booking.flight_status.title() }}</span>
+      </div>
+    </div>
+
+    {% if booking.status == 'confirmed' %}
+    <hr>
+    <div class="d-flex gap-2 mt-2">
+      <a href="/confirmation/{{ booking.pnr }}" class="btn btn-outline-primary btn-sm">
+        <i class="bi bi-ticket-perforated me-1"></i>View Boarding Pass
+      </a>
+      <form method="POST" action="/cancel/{{ booking.pnr }}"
+            onsubmit="return confirm('Cancel this booking? This cannot be undone.')">
+        <button type="submit" class="btn btn-outline-danger btn-sm">
+          <i class="bi bi-x-circle me-1"></i>Cancel Booking
+        </button>
+      </form>
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}
